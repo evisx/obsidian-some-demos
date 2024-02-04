@@ -1,5 +1,5 @@
 import { FuzzySuggestModal } from "obsidian";
-import type { FuzzyMatch , App} from "obsidian";
+import type { FuzzyMatch, App } from "obsidian";
 
 type Nullable<T> = T | null;
 
@@ -28,22 +28,24 @@ export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> 
 		});
 
 		this.inputEl.addEventListener("keydown", (event: KeyboardEvent) => {
-			// chooser is undocumented & not officially a part of the Obsidian API, hence the precautions in using it.
-			if (event.code !== "Tab" || !("chooser" in this)) {
+			if (event.code !== "Tab") {
 				return;
 			}
 
-			const { values, selectedItem } = this.chooser as {
-				values: {
-					item: string;
-					match: { score: number; matches: unknown[]; };
-				}[];
-				selectedItem: number;
-				[key: string]: unknown;
-			};
+			// chooser is undocumented & not officially a part of the Obsidian API, hence the precautions in using it.
+			if ('chooser' in this) {
+				const { values, selectedItem } = Reflect.get(this, "chooser") as {
+					values: {
+						item: string;
+						match: { score: number; matches: unknown[]; };
+					}[];
+					selectedItem: number;
+					[key: string]: unknown;
+				};
 
-			const { value } = this.inputEl;
-			this.inputEl.value = values[selectedItem].item ?? value;
+				const inputEl = Reflect.get(this, "inputEl") as HTMLInputElement;
+				inputEl.value = values[selectedItem].item ?? inputEl.value;
+			}
 		});
 
 		this.open();
@@ -63,14 +65,14 @@ export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> 
 	}
 
 	selectSuggestion(
-		value: FuzzyMatch<T>,
+		value: FuzzyMatch<Nullable<T>>,
 		evt: MouseEvent | KeyboardEvent
 	) {
 		this.resolved = true;
 		super.selectSuggestion(value, evt);
 	}
 
-	onChooseItem(item: Nullable<T>, evt: MouseEvent | KeyboardEvent): void {
+	onChooseItem(item: Nullable<T>, _evt: MouseEvent | KeyboardEvent): void {
 		this.resolved = true;
 		this.resolvePromise([item, this.inputEl.value]);
 	}

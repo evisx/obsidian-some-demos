@@ -1,9 +1,9 @@
 {
-	"id": "some-domes",
-	"name": "Some Domes",
+	"id": "someDemos",
+	"name": "Some Demos",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"description": "My utils base on Obsidian API.",
 	"author": "evisx",
 	"authorUrl": "https://obsidian.md",
 	"fundingUrl": "https://obsidian.md/pricing",
