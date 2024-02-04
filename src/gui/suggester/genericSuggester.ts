@@ -2,11 +2,12 @@ import { FuzzySuggestModal } from "obsidian";
 import type { FuzzyMatch, App } from "obsidian";
 
 type Nullable<T> = T | null;
+interface Result<T> { item: Nullable<T>, input: string }
 
 export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> {
-	private resolvePromise: (value: [Nullable<T>, string]) => void;
+	private resolvePromise: (value: Result<T>) => void;
 	private rejectPromise: (reason?: unknown) => void;
-	public promise: Promise<[Nullable<T>, string]>;
+	public promise: Promise<Result<T>>;
 	private resolved: boolean;
 
 	public static Suggest<T>(app: App, displayItems: string[], items: T[]) {
@@ -22,7 +23,7 @@ export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> 
 	) {
 		super(app);
 
-		this.promise = new Promise<[Nullable<T>, string]>((resolve, reject) => {
+		this.promise = new Promise<Result<T>>((resolve, reject) => {
 			this.resolvePromise = resolve;
 			this.rejectPromise = reject;
 		});
@@ -74,7 +75,7 @@ export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> 
 
 	onChooseItem(item: Nullable<T>, _evt: MouseEvent | KeyboardEvent): void {
 		this.resolved = true;
-		this.resolvePromise([item, this.inputEl.value]);
+		this.resolvePromise({ item: item, input: this.inputEl.value });
 	}
 
 	onClose() {
