@@ -28,6 +28,8 @@ export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> 
 			this.rejectPromise = reject;
 		});
 
+		const getText = (item: Nullable<T>) => this.getItemText(item)
+
 		this.inputEl.addEventListener("keydown", (event: KeyboardEvent) => {
 			if (event.code !== "Tab") {
 				return;
@@ -37,7 +39,7 @@ export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> 
 			if ('chooser' in this) {
 				const { values, selectedItem } = Reflect.get(this, "chooser") as {
 					values: {
-						item: string;
+						item: Nullable<T>;
 						match: { score: number; matches: unknown[]; };
 					}[];
 					selectedItem: number;
@@ -45,7 +47,7 @@ export default class GenericSuggester<T> extends FuzzySuggestModal<Nullable<T>> 
 				};
 
 				const inputEl = Reflect.get(this, "inputEl") as HTMLInputElement;
-				inputEl.value = values[selectedItem].item ?? inputEl.value;
+				inputEl.value = getText(values[selectedItem].item);
 			}
 		});
 
